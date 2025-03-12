@@ -1,29 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_medicament/models/appointment_model.dart';
+import 'package:gestion_medicament/providers/appointment_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/appointment_model.dart';
-import '../providers/appointment_provider.dart';
 
-class EditAppointmentScreen extends StatelessWidget {
+class EditAppointmentScreen extends StatefulWidget {
   final Appointment appointment;
-  final _formKey = GlobalKey<FormState>();
-  final _doctorNameController = TextEditingController();
-  final _dateController = TextEditingController();
-  final _timeController = TextEditingController();
-  final _notesController = TextEditingController();
+  const EditAppointmentScreen({super.key, required this.appointment});
 
-  EditAppointmentScreen({super.key, required this.appointment}) {
-    _doctorNameController.text = appointment.doctorName;
-    _dateController.text = appointment.date;
-    _timeController.text = appointment.time;
-    _notesController.text = appointment.notes;
+  @override
+  _EditAppointmentScreenState createState() => _EditAppointmentScreenState();
+}
+
+class _EditAppointmentScreenState extends State<EditAppointmentScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _doctorNameController;
+  late TextEditingController _dateController;
+  late TextEditingController _timeController;
+  late TextEditingController _notesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorNameController =
+        TextEditingController(text: widget.appointment.doctorName);
+    _dateController = TextEditingController(text: widget.appointment.date);
+    _timeController = TextEditingController(text: widget.appointment.time);
+    _notesController = TextEditingController(text: widget.appointment.notes);
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _timeController.text = picked.format(context);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _doctorNameController.dispose();
+    _dateController.dispose();
+    _timeController.dispose();
+    _notesController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Modifier le Rendez-vous'),
-      ),
+      appBar: AppBar(title: const Text('Edit Appointment')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -31,51 +75,27 @@ class EditAppointmentScreen extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                controller: _doctorNameController,
-                decoration: InputDecoration(labelText: 'Nom du Docteur'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer un nom';
-                  }
-                  return null;
-                },
-              ),
+                  controller: _doctorNameController,
+                  decoration: const InputDecoration(labelText: 'Doctor Name')),
               TextFormField(
-                controller: _dateController,
-                decoration: InputDecoration(labelText: 'Date'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer une date';
-                  }
-                  return null;
-                },
-              ),
+                  controller: _dateController,
+                  decoration: const InputDecoration(labelText: 'Date'),
+                  readOnly: true,
+                  onTap: () => _selectDate(context)),
               TextFormField(
-                controller: _timeController,
-                decoration: InputDecoration(labelText: 'Heure'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer une heure';
-                  }
-                  return null;
-                },
-              ),
+                  controller: _timeController,
+                  decoration: const InputDecoration(labelText: 'Time'),
+                  readOnly: true,
+                  onTap: () => _selectTime(context)),
               TextFormField(
-                controller: _notesController,
-                decoration: InputDecoration(labelText: 'Notes'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer des notes';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
+                  controller: _notesController,
+                  decoration: const InputDecoration(labelText: 'Notes')),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    Appointment updatedAppointment = Appointment(
-                      id: appointment.id,
+                    final updatedAppointment = Appointment(
+                      id: widget.appointment.id,
                       doctorName: _doctorNameController.text,
                       date: _dateController.text,
                       time: _timeController.text,
@@ -86,7 +106,7 @@ class EditAppointmentScreen extends StatelessWidget {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('Modifier'),
+                child: const Text('Update'),
               ),
             ],
           ),

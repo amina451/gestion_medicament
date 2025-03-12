@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_medicament/providers/appointment_provider.dart';
+import 'package:gestion_medicament/screens/add_appointment_screen.dart';
+import 'package:gestion_medicament/screens/edit_appointment_screen.dart';
 import 'package:provider/provider.dart';
-import '../models/appointment_model.dart';
-import '../providers/appointment_provider.dart';
-import 'add_appointment_screen.dart';
-import 'edit_appointment_screen.dart';
 
-class AppointmentListScreen extends StatelessWidget {
-  // إزالة const من المُنشئ
-  AppointmentListScreen({super.key});
+class AppointmentListScreen extends StatefulWidget {
+  const AppointmentListScreen({super.key});
+
+  @override
+  _AppointmentListScreenState createState() => _AppointmentListScreenState();
+}
+
+class _AppointmentListScreenState extends State<AppointmentListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<AppointmentProvider>(context, listen: false).loadAppointments();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +25,11 @@ class AppointmentListScreen extends StatelessWidget {
         title: const Text('Appointment List'),
       ),
       body: Consumer<AppointmentProvider>(
-        builder: (context, appointmentProvider, child) {
+        builder: (context, provider, child) {
           return ListView.builder(
-            itemCount: appointmentProvider.appointments.length,
+            itemCount: provider.appointments.length,
             itemBuilder: (context, index) {
-              Appointment appointment = appointmentProvider.appointments[index];
+              final appointment = provider.appointments[index];
               return ListTile(
                 title: Text(appointment.doctorName),
                 subtitle: Text(
@@ -42,8 +51,8 @@ class AppointmentListScreen extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        appointmentProvider.deleteAppointment(appointment.id!);
+                      onPressed: () async {
+                        await provider.deleteAppointment(appointment.id!);
                       },
                     ),
                   ],

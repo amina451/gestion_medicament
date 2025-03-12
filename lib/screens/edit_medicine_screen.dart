@@ -11,7 +11,7 @@ class EditMedicineScreen extends StatelessWidget {
   final _frequencyController = TextEditingController();
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
-
+ 
   EditMedicineScreen({super.key, required this.medicine}) {
     _nameController.text = medicine.name;
     _dosageController.text = medicine.dosage;
@@ -96,6 +96,8 @@ class EditMedicineScreen extends StatelessWidget {
                     );
                     Provider.of<MedicineProvider>(context, listen: false)
                         .updateMedicine(updatedMedicine);
+                   
+                   
                     Navigator.pop(context);
                   }
                 },

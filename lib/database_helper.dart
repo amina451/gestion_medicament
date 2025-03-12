@@ -1,6 +1,6 @@
+import 'dart:developer';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -13,7 +13,10 @@ class DatabaseHelper {
   DatabaseHelper._internal();
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null) {
+      log("Database already initialized");
+      return _database!;
+    }
     _database = await _initDatabase();
     return _database!;
   }
@@ -37,15 +40,17 @@ class DatabaseHelper {
         endDate TEXT
       )
     ''');
-
+  
     await db.execute('''
-      CREATE TABLE appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        description TEXT,
-        date TEXT,
-        time TEXT
-      )
-    ''');
+  CREATE TABLE appointments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    doctorName TEXT NOT NULL,
+    notes TEXT,
+    date TEXT,
+    time TEXT
+  )
+''');
   }
+
+
 }
