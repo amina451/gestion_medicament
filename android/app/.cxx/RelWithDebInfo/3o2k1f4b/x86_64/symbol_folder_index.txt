@@ -1,0 +1,1 @@
+C:\gestion_medicament\build\app\intermediates\cxx\RelWithDebInfo\3o2k1f4b\obj\x86_64

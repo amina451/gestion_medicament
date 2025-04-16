@@ -1,0 +1,2 @@
+C:/gestion_medicament/android/app/.cxx/RelWithDebInfo/3o2k1f4b/x86/CMakeFiles/edit_cache.dir
+C:/gestion_medicament/android/app/.cxx/RelWithDebInfo/3o2k1f4b/x86/CMakeFiles/rebuild_cache.dir
